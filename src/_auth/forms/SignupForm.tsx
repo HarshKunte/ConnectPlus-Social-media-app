@@ -6,7 +6,6 @@ import { useForm } from "react-hook-form"
   import {
     Form,
     FormControl,
-    FormDescription,
     FormField,
     FormItem,
     FormLabel,
@@ -15,11 +14,21 @@ import { useForm } from "react-hook-form"
   import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { SignupValidation } from "@/lib/validation"
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import Loader from "@/components/shared/Loader"
+import { useToast } from "@/components/ui/use-toast"
+import { useCreateUserAccountMutation, useSignInAccountMutation } from "@/lib/react-query/queriesAndMutation"
+import { useUserContext } from "@/context/AuthContext"
 
 const SignupForm = () => {
- const isLoading = false
+  const {toast} = useToast()
+
+  const {checkAuthUser} = useUserContext()
+  const navigate = useNavigate()
+
+ //rect query mutations
+ const {mutateAsync: createUSerAccount, isPending:isCreatingUser} = useCreateUserAccountMutation()
+ const {mutateAsync: signInAccount} = useSignInAccountMutation()
 
 const form = useForm<z.infer<typeof SignupValidation>>({
     resolver: zodResolver(SignupValidation),
@@ -32,10 +41,30 @@ const form = useForm<z.infer<typeof SignupValidation>>({
   })
  
   // 2. Define a submit handler.
-  function onSubmit(values: z.infer<typeof SignupValidation>) {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
-    console.log(values)
+  async function onSubmit(values: z.infer<typeof SignupValidation>) {
+    
+    const newUser = await createUSerAccount(values)
+
+    if(!newUser){
+      return toast({title:'Signup failed please try again.'})
+    }
+
+    const session = await signInAccount({email:values.email, password:values.password})
+
+    if(!session){
+      return toast({title:'Sign in failed please try again.'})
+    }
+
+    const isLoggedIn = await checkAuthUser()
+
+    if(isLoggedIn){
+      form.reset()
+      navigate('/')
+    }else{
+      return toast({title:'Sign Up failed please try again.'})
+    }
+
+
   }
   return (
     <Form {...form}>
@@ -50,7 +79,7 @@ const form = useForm<z.infer<typeof SignupValidation>>({
         </p>
 
         <form
-          
+          onSubmit={form.handleSubmit(onSubmit)}
           className="flex flex-col gap-5 w-full mt-4">
           <FormField
             control={form.control}
@@ -109,7 +138,7 @@ const form = useForm<z.infer<typeof SignupValidation>>({
           />
 
           <Button type="submit" className="shad-button_primary">
-            {isLoading ? (
+            {isCreatingUser ? (
               <div className="flex-center gap-2">
                 <Loader /> Loading...
               </div>
