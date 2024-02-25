@@ -1,8 +1,14 @@
-import React from 'react'
+import GridPostList from "@/components/shared/GridPostList";
+import { Models } from "appwrite";
 
-const LikedPosts = () => {
+type LikedPostListProps = {
+  likedPosts: Models.Document[];
+};
+
+const LikedPosts = ({likedPosts}:LikedPostListProps) => {
+  
   return (
-    <div>LikedPosts</div>
+    <GridPostList posts={likedPosts} showStats={false}/>
   )
 }
 

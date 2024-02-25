@@ -4,6 +4,7 @@ import { Models } from "appwrite";
 import { useGetRecentPosts } from "@/lib/react-query/queriesAndMutation";
 import PostCard from "@/components/shared/PostCard";
 import Loader from "@/components/shared/Loader";
+import TopCreatorsSidebar from "@/components/shared/TopCreatorsSidebar";
 
 const Home = () => {
   // const { toast } = useToast();
@@ -46,6 +47,8 @@ const Home = () => {
           )}
         </div>
       </div>
+
+      <TopCreatorsSidebar/>
 
     </div>
   );
