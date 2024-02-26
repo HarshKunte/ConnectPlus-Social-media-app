@@ -9,6 +9,8 @@ import {
   createUSerAccount,
   deletePost,
   deleteSavedPost,
+  followUser,
+  getAllUsers,
   getCurrentUser,
   getInfinitePosts,
   getPostById,
@@ -21,6 +23,7 @@ import {
   searchPosts,
   signInAccount,
   signOutAccount,
+  unFollowUser,
   updatePost,
   updateUser,
 } from "../appwrite/api";
@@ -194,7 +197,6 @@ export const useSearchPosts = (searchTerm: string) => {
 };
 
 export const useGetSavedPosts = (userId: string) => {
-  
   return useInfiniteQuery({
     queryKey: [QUERY_KEYS.GET_INFINITE_POSTS, QUERY_KEYS.GET_SAVED_POSTS],
     queryFn: ({ pageParam }) => getSavedInfinitePosts({ pageParam, userId }),
@@ -209,6 +211,7 @@ export const useGetSavedPosts = (userId: string) => {
       const lastId = lastPage.documents[lastPage.documents.length - 1].$id;
       return lastId;
     },
+    enabled: !!userId,
   });
 };
 
@@ -239,6 +242,13 @@ export const useGetUserPosts = (userId?: string) => {
   });
 };
 
+export const useGetAllUsers = () => {
+  return useQuery({
+    queryKey: [QUERY_KEYS.GET_USERS],
+    queryFn: getAllUsers,
+  });
+};
+
 export const useUpdateUser = () => {
   const queryClient = useQueryClient();
   return useMutation({
@@ -248,7 +258,46 @@ export const useUpdateUser = () => {
         queryKey: [QUERY_KEYS.GET_CURRENT_USER],
       });
       queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.GET_USERS],
+      });
+      queryClient.invalidateQueries({
         queryKey: [QUERY_KEYS.GET_USER_BY_ID, data?.$id],
+      });
+    },
+  });
+};
+
+export const useFollowUser = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      currentUserId,
+      followedUserId,
+    }: {
+      currentUserId: string;
+      followedUserId: string;
+    }) => followUser(currentUserId, followedUserId),
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.GET_CURRENT_USER],
+      });
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.GET_USER_BY_ID, data?.$id],
+      });
+    },
+  });
+};
+
+export const useUnFollowUser = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (followedRecordId: string) => unFollowUser(followedRecordId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.GET_USER_BY_ID],
+      });
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.GET_CURRENT_USER],
       });
     },
   });

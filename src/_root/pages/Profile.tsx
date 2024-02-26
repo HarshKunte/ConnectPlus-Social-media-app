@@ -11,7 +11,9 @@ import {
   useLocation,
 } from "react-router-dom";
 import { LikedPosts } from ".";
-import { useGetUserById } from "@/lib/react-query/queriesAndMutation";
+import { useFollowUser, useGetCurrentUser, useGetUserById, useUnFollowUser } from "@/lib/react-query/queriesAndMutation";
+import { Models } from "appwrite";
+import { useEffect, useState } from "react";
 
 interface StabBlockProps {
   value: string | number;
@@ -27,15 +29,39 @@ const StatBlock = ({ value, label }: StabBlockProps) => (
 
 const Profile = () => {
 
+  const [isFollowed, setIsFollowed] = useState(false)
+
   const {pathname} = useLocation()
   const { id } = useParams();
 
   const { user } = useUserContext();
 
-  const { data: currentUser } = useGetUserById(id || "");  
+  const { data: profileUser } = useGetUserById(id || ""); 
+  const {mutate:followUser, isPending:isFollowing} = useFollowUser();
+  const {mutate:unFollowUser, isPending:isUnFollowing} = useUnFollowUser();
+
+  const { data: currentUser } = useGetCurrentUser();
+
+  const followedRecord = currentUser?.following.find(
+    (record: Models.Document) => record.followed.$id === profileUser?.$id
+  );
   
 
-  if (!currentUser)
+  useEffect(() => {
+    setIsFollowed(!!followedRecord);
+  }, [currentUser]);
+
+  const handleFollowUnfollow = () =>{
+    if(isFollowed){
+      unFollowUser(followedRecord.$id)
+      setIsFollowed(false)
+    }else{
+      followUser({currentUserId:user.id, followedUserId: profileUser?.$id || ""})
+      if(!isFollowing) setIsFollowed(true)
+    }
+  }
+
+  if (!profileUser)
     return (
       <div className="flex-center w-full h-full">
         <Loader />
@@ -48,7 +74,7 @@ const Profile = () => {
         <div className="flex xl:flex-row flex-col max-xl:items-center flex-1 gap-7">
           <img
             src={
-               currentUser?.imageUrl || "/assets/icons/profile-placeholder.svg"
+               profileUser?.imageUrl || "/assets/icons/profile-placeholder.svg"
             }
             alt="profile"
             className="w-28 h-28 lg:h-36 lg:w-36 rounded-full"
@@ -56,31 +82,29 @@ const Profile = () => {
           <div className="flex flex-col flex-1 justify-between md:mt-2">
             <div className="flex flex-col w-full">
               <h1 className="text-center xl:text-left h3-bold md:h1-semibold w-full">
-                {currentUser.name}
+                {profileUser.name}
               </h1>
               <p className="small-regular md:body-medium text-light-3 text-center xl:text-left">
-                @{currentUser.username}
+                @{profileUser.username}
               </p>
             </div>
 
             <div className="flex gap-8 mt-10 items-center justify-center xl:justify-start flex-wrap z-20">
-              <StatBlock value={currentUser.posts.length} label="Posts" />
-              <StatBlock value={currentUser.followers} label="Followers" />
-              <StatBlock value={currentUser.following} label="Following" />
+              <StatBlock value={profileUser.posts.length} label="Posts" />
+              <StatBlock value={profileUser.followersList.length} label="Followers" />
+              <StatBlock value={profileUser.following.length} label="Following" />
             </div>
 
             <p className="small-medium md:base-medium text-center xl:text-left mt-7 max-w-screen-sm">
-              {currentUser.bio}
+              {profileUser.bio}
             </p>
           </div>
 
           <div className="flex justify-center gap-4">
             <div>
-              <Link
-                to={`/update-profile/${currentUser.$id}`}
-                className={`h-12 bg-dark-4 px-5 text-light-1 flex-center gap-2 rounded-lg ${
-                  user.id !== currentUser.$id && "hidden"
-                }`}>
+            {user.id === profileUser.$id &&<Link
+                to={`/update-profile/${profileUser.$id}`}
+                className={`h-12 bg-dark-4 px-5 text-light-1 flex-center gap-2 rounded-lg`}>
                 <img
                   src={"/assets/icons/edit.svg"}
                   alt="edit"
@@ -91,17 +115,21 @@ const Profile = () => {
                   Edit Profile
                 </p>
               </Link>
+              }
             </div>
-            {user.id !== currentUser.$id && <div>
-              <Button type="button" className="shad-button_primary px-8">
-                Follow
-              </Button>
+            {user.id !== profileUser.$id && <div>
+              {isFollowed? <Button onClick={handleFollowUnfollow} type="button" className="shad-button_primary px-8">
+                {isUnFollowing?<Loader/> : <>Unfollow</>}
+              </Button> : 
+              <Button onClick={handleFollowUnfollow} type="button" className="shad-button_primary px-8">
+              {isFollowing?<Loader/> : <>Follow</>}
+            </Button>}
             </div>}
           </div>
         </div>
       </div>
 
-      {currentUser.$id === user.id && (
+      {profileUser.$id === user.id && (
         <div className="flex max-w-5xl w-full">
           <Link
             to={`/profile/${id}`}
@@ -135,10 +163,10 @@ const Profile = () => {
       <Routes>
         <Route
           index
-          element={<GridPostList posts={currentUser.posts} showUser={false} />}
+          element={<GridPostList posts={profileUser.posts} showUser={false} />}
         />
-        {currentUser.$id === user.id && (
-          <Route path="/liked-posts" element={<LikedPosts likedPosts={currentUser.liked}/>} />
+        {profileUser.$id === user.id && (
+          <Route path="/liked-posts" element={<LikedPosts likedPosts={profileUser.liked}/>} />
         )}
       </Routes>
       <Outlet />

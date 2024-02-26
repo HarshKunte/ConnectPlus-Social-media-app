@@ -19,7 +19,7 @@ const Home = () => {
   if (isErrorPosts) {
     return (
       <div className="flex flex-1">
-        <div className="home-container">
+        <div className="home-container  min-w-[350px]">
           <p className="body-medium text-light-1">Something bad happened</p>
         </div>
         <div className="home-creators">
@@ -30,8 +30,8 @@ const Home = () => {
   }
 
   return (
-    <div className="flex flex-1">
-      <div className="home-container">
+    <div className="flex flex-1 ">
+      <div className="home-container  lg:min-w-[760px]">
         <div className="home-posts">
           <h2 className="h3-bold md:h2-bold text-left w-full">Home Feed</h2>
           {isPostLoading && !posts ? (

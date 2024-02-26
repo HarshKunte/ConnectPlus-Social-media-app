@@ -1,10 +1,10 @@
-import { useUserContext } from "@/context/AuthContext"
+import { Link } from "react-router-dom"
 import { Button } from "../ui/button"
+import { Models } from "appwrite"
 
-const CreatorCard = () => {
-    const {user } = useUserContext()
+const CreatorCard = ({user}:{user:Models.Document}) => {
   return (
-    <div className='border border-dark-4 flex flex-col px-16 py-6 rounded-3xl items-center'>
+    <Link to={`/profile/${user.$id}`} className='border border-dark-4 flex flex-col px-16 py-6 rounded-3xl items-center'>
         <img
               src={
                 // post.creator?.imageUrl ||
@@ -26,7 +26,7 @@ const CreatorCard = () => {
             className="shad-button_primary whitespace-nowrap px-6 py-2 text-sm rounded-lg">
             Follow
           </Button>
-    </div>
+    </Link>
   )
 }
 

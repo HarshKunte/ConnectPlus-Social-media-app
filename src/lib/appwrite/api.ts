@@ -421,6 +421,7 @@ export async function getUserPosts(userId?: string) {
 }
 
 export async function getUserById(userId?: string) {
+  
   if (!userId) return;
 
   try {
@@ -500,6 +501,21 @@ export async function updateUser(user: IUpdateUser) {
   }
 }
 
+export async function getAllUsers() {
+  try {
+    const users = await databases.listDocuments(
+      appwriteConfig.databaseId,
+      appwriteConfig.userCollectionId
+    );
+
+    if (!users) throw Error;
+
+    return users;
+  } catch (error) {
+    console.log(error);
+  }
+}
+
 
 export async function getSavedInfinitePosts({ pageParam, userId }: { pageParam: number, userId:string }) {
   const queries: any[] = [Query.orderDesc("$createdAt"), Query.limit(9), Query.equal("user", userId)];
@@ -518,6 +534,45 @@ export async function getSavedInfinitePosts({ pageParam, userId }: { pageParam: 
     if (!posts) throw Error;
 
     return posts;
+  } catch (error) {
+    console.log(error);
+  }
+}
+// ================= FOLLOW USER
+export async function followUser(currentUserId:string, followedUserId:string) {
+
+  try {
+    const followedUserDoc = await databases.createDocument(
+      appwriteConfig.databaseId,
+      appwriteConfig.connectionsCollectionId,
+      ID.unique(),
+      {
+        user: currentUserId,
+        followed: followedUserId,
+      }
+    );
+
+    if (!followedUserDoc) throw Error;
+
+    return followedUserDoc;
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+// ======================== UNFOLLOW USER 
+
+export async function unFollowUser(savedRecordId: string) {
+  try {
+    const statusCode = await databases.deleteDocument(
+      appwriteConfig.databaseId,
+      appwriteConfig.connectionsCollectionId,
+      savedRecordId
+    );
+
+    if (!statusCode) throw Error;
+
+    return { status: "Ok" };
   } catch (error) {
     console.log(error);
   }

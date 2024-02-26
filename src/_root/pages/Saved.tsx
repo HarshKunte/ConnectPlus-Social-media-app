@@ -10,11 +10,7 @@ import SavedPostContainer from "@/components/shared/SavedPostContainer";
 const Saved = () => {
   const { ref, inView } = useInView();
   const {user} = useUserContext()
-  const { data: posts, isLoading:isLoading, isPending:isFetching, fetchNextPage, hasNextPage } = useGetSavedPosts(user.id);
-  
-  console.log(isLoading);
-  console.log(isFetching);
-  
+  const { data: posts, isRefetching, isPending:isFetching, fetchNextPage, hasNextPage } = useGetSavedPosts(user.id);
 
   useEffect(() => {
     if (inView) {
@@ -22,7 +18,7 @@ const Saved = () => {
     }
   }, [inView]);
 
-  if (!posts || isFetching || isLoading)
+  if (!posts || isFetching || isRefetching)
     return (
       <div className="flex-center w-full h-full">
         <Loader />
