@@ -96,18 +96,25 @@ export async function getCurrentUser(){
 
 // ============================== CREATE POST
 export async function createPost(post: INewPost) {
+    const hasFileToUpdate = post.file.length > 0;
+
+    let fileUrl, uploadedFile;
     try {
-      // Upload file to appwrite storage
-      const uploadedFile = await uploadFile(post.file[0]);
-  
-      if (!uploadedFile) throw Error;
-  
-      // Get file url
-      const fileUrl = getFilePreview(uploadedFile.$id);
-      if (!fileUrl) {
-        await deleteFile(uploadedFile.$id);
-        throw Error;
+
+      if(hasFileToUpdate){
+        // Upload file to appwrite storage
+        uploadedFile = await uploadFile(post.file[0]);
+    
+        if (!uploadedFile) throw Error;
+    
+        // Get file url
+        fileUrl = getFilePreview(uploadedFile.$id);
+        if (!fileUrl) {
+          await deleteFile(uploadedFile.$id);
+          throw Error;
+        }
       }
+      
   
       // Convert tags into array
       const tags = post.tags?.replace(/ /g, "").split(",") || [];
@@ -120,14 +127,14 @@ export async function createPost(post: INewPost) {
         {
           creator: post.userId,
           caption: post.caption,
-          imageUrl: fileUrl,
-          imageId: uploadedFile.$id,
+          imageUrl: fileUrl || null,
+          imageId: uploadedFile?.$id || null,
           location: post.location,
           tags: tags,
         }
       );
   
-      if (!newPost) {
+      if (!newPost && uploadedFile) {
         await deleteFile(uploadedFile.$id);
         throw Error;
       }
@@ -186,6 +193,7 @@ export async function deleteFile(fileId: string) {
 
 // ============================== GET RECENT POSTS
 export async function getRecentPosts() {
+
   try {
     const posts = await databases.listDocuments(
       appwriteConfig.databaseId,
@@ -502,6 +510,8 @@ export async function updateUser(user: IUpdateUser) {
 }
 
 export async function getAllUsers() {
+  console.log('API get all users');
+  
   try {
     const users = await databases.listDocuments(
       appwriteConfig.databaseId,

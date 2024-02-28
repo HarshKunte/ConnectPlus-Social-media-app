@@ -53,11 +53,11 @@ const PostDetails = () => {
         <Loader />
       ) : (
         <div className="post_details-card">
-          <img
+          {post?.imageUrl && <img
             src={post?.imageUrl}
             alt="creator"
             className="post_details-img"
-          />
+          />}
 
           <div className="post_details-info">
             <div className="flex-between w-full">

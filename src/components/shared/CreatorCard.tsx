@@ -1,13 +1,11 @@
 import { Link } from "react-router-dom"
-import { Button } from "../ui/button"
 import { Models } from "appwrite"
 
 const CreatorCard = ({user}:{user:Models.Document}) => {
   return (
-    <Link to={`/profile/${user.$id}`} className='border border-dark-4 flex flex-col px-16 py-6 rounded-3xl items-center'>
+    <Link to={`/profile/${user.$id}`} className='border border-dark-4 flex flex-col px-8 py-6 md:px-16 md:py-6 rounded-3xl items-center'>
         <img
               src={
-                // post.creator?.imageUrl ||
                 user?.imageUrl ||
                 "/assets/icons/profile-placeholder.svg"
               }
@@ -20,12 +18,9 @@ const CreatorCard = ({user}:{user:Models.Document}) => {
               {user.name}
             </p>
             <p className="small-regular text-light-3">@{user.username}</p>
+            <p className="small-regular text-light-1 mt-4">{user.followersList.length} followers</p>
             </div>
-            <Button
-            type="button"
-            className="shad-button_primary whitespace-nowrap px-6 py-2 text-sm rounded-lg">
-            Follow
-          </Button>
+            
     </Link>
   )
 }

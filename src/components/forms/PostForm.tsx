@@ -7,45 +7,62 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { PostValidation } from "@/lib/validation";
 import { useToast } from "@/components/ui/use-toast";
 import { useUserContext } from "@/context/AuthContext";
-import { useCreatePost, useUpdatePost } from "@/lib/react-query/queriesAndMutation";
+import {
+  useCreatePost,
+  useUpdatePost,
+} from "@/lib/react-query/queriesAndMutation";
 import { Button } from "../ui/button";
-import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "../ui/form";
+import {
+  Form,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormControl,
+  FormMessage,
+} from "../ui/form";
 import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
 import { Loader } from "lucide-react";
 import FileUploader from "../shared/FileUploader";
+import { useEffect } from "react";
 
 type PostFormProps = {
   post?: Models.Document;
   action: "Create" | "Update";
+  postType?: string;
+  suggestedCaption? :string;
 };
 
-const PostForm = ({ post, action }: PostFormProps) => {
+const PostForm = ({ post, action, postType, suggestedCaption }: PostFormProps) => {
+  console.log(suggestedCaption);
+  
   const navigate = useNavigate();
   const { toast } = useToast();
   const { user } = useUserContext();
-  
-  
+
   const form = useForm<z.infer<typeof PostValidation>>({
     resolver: zodResolver(PostValidation),
     defaultValues: {
-      caption: post ? post?.caption : "",
+      caption: post ? post?.caption : suggestedCaption? suggestedCaption:"",
       file: [],
       location: post ? post.location : "",
       tags: post ? post.tags.join(",") : "",
+      musicUrl: post ? post.musicUrl : "",
+      isAnonymous: post ? post.isAnonymous : false,
     },
   });
-
-  
+  useEffect(()=>{
+    form.setValue('caption', suggestedCaption || "")
+  },[suggestedCaption])
 
   // Query
-  const { mutateAsync: createPost, isPending: isLoadingCreate } = useCreatePost();
-  const { mutateAsync: updatePost, isPending: isLoadingUpdate } = useUpdatePost();
-
+  const { mutateAsync: createPost, isPending: isLoadingCreate } =
+    useCreatePost();
+  const { mutateAsync: updatePost, isPending: isLoadingUpdate } =
+    useUpdatePost();
 
   // Handler
   const handleSubmit = async (value: z.infer<typeof PostValidation>) => {
-
     // ACTION = UPDATE
     if (post && action === "Update") {
       const updatedPost = await updatePost({
@@ -76,21 +93,24 @@ const PostForm = ({ post, action }: PostFormProps) => {
     }
     navigate("/");
   };
-console.log('reached');
 
   return (
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(handleSubmit)}
-        className="flex flex-col gap-9 w-full  max-w-5xl">
+        className="flex flex-col gap-9 w-full  max-w-5xl"
+      >
         <FormField
           control={form.control}
           name="caption"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="shad-form_label">Caption</FormLabel>
+              <FormLabel className="shad-form_label">
+                Caption / Text<span className="text-red"> *</span>
+              </FormLabel>
               <FormControl>
                 <Textarea
+                placeholder="Write what you want to share"
                   className="shad-textarea custom-scrollbar"
                   {...field}
                 />
@@ -100,29 +120,55 @@ console.log('reached');
           )}
         />
 
-        <FormField
-          control={form.control}
-          name="file"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel className="shad-form_label">Add Photos</FormLabel>
-              <FormControl>
-                <FileUploader
-                  fieldChange={field.onChange}
-                  mediaUrl={post?.imageUrl}
-                />
-              </FormControl>
-              <FormMessage className="shad-form_message" />
-            </FormItem>
-          )}
-        />
+        {postType === "image" && (
+          <FormField
+            control={form.control}
+            name="file"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="shad-form_label">
+                  Image/Gif (Optional)
+                </FormLabel>
+                <FormControl>
+                  <FileUploader
+                    fieldChange={field.onChange}
+                    mediaUrl={post?.imageUrl}
+                  />
+                </FormControl>
+                <FormMessage className="shad-form_message" />
+              </FormItem>
+            )}
+          />
+        )}
 
+        {postType === "music" && (
+          <FormField
+            control={form.control}
+            name="musicUrl"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="shad-form_label">Song URL (Spotify URL)</FormLabel>
+                <FormControl>
+                  <Input
+                    type="text"
+                    placeholder="Paste spotify link of the music track you want to share"
+                    className="shad-input"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage className="shad-form_message" />
+              </FormItem>
+            )}
+          />
+        )}
         <FormField
           control={form.control}
           name="location"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="shad-form_label">Add Location</FormLabel>
+              <FormLabel className="shad-form_label">
+                Location (Optional)
+              </FormLabel>
               <FormControl>
                 <Input type="text" className="shad-input" {...field} />
               </FormControl>
@@ -137,7 +183,7 @@ console.log('reached');
           render={({ field }) => (
             <FormItem>
               <FormLabel className="shad-form_label">
-                Add Tags (separated by comma " , ")
+                Tags (separated by comma " , ")
               </FormLabel>
               <FormControl>
                 <Input
@@ -156,13 +202,15 @@ console.log('reached');
           <Button
             type="button"
             className="shad-button_dark_4"
-            onClick={() => navigate(-1) }>
+            onClick={() => navigate(-1)}
+          >
             Cancel
           </Button>
           <Button
             type="submit"
             className="shad-button_primary whitespace-nowrap"
-            disabled={isLoadingCreate || isLoadingUpdate}>
+            disabled={isLoadingCreate || isLoadingUpdate}
+          >
             {(isLoadingCreate || isLoadingUpdate) && <Loader />}
             {action} Post
           </Button>

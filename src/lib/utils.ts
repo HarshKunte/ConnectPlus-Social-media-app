@@ -1,5 +1,6 @@
 import { type ClassValue, clsx } from "clsx"
 import { twMerge } from "tailwind-merge"
+import OpenAI from 'openai'
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -55,3 +56,6 @@ export const multiFormatDateString = (timestamp: string = ""): string => {
 export const checkIsLiked = (likeList: string[], userId: string) => {
   return likeList.includes(userId);
 };
+
+
+export const openai = new OpenAI({apiKey:'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', dangerouslyAllowBrowser:true});

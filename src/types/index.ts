@@ -19,6 +19,8 @@ export type INavLink = {
     file: File[];
     location?: string;
     tags?: string;
+    musicUrl: string,
+    isAnonymous: boolean
   };
   
   export type IUpdatePost = {

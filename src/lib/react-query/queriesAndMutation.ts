@@ -55,15 +55,18 @@ export const useCreatePost = () => {
       // so that it invalidates the query and hence does not return cached result
       queryClient.invalidateQueries({
         queryKey: [QUERY_KEYS.GET_RECENT_POSTS],
+        refetchType: 'all'
       });
     },
   });
 };
 
 export const useGetRecentPosts = () => {
+  
   return useQuery({
     queryKey: [QUERY_KEYS.GET_RECENT_POSTS],
     queryFn: getRecentPosts,
+    refetchOnMount:false
   });
 };
 
@@ -83,6 +86,7 @@ export const useLikePost = () => {
       });
       queryClient.invalidateQueries({
         queryKey: [QUERY_KEYS.GET_RECENT_POSTS],
+        refetchType:'all'
       });
       queryClient.invalidateQueries({
         queryKey: [QUERY_KEYS.GET_POSTS],
@@ -102,6 +106,7 @@ export const useSavePost = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: [QUERY_KEYS.GET_RECENT_POSTS],
+        refetchType:'all'
       });
       queryClient.invalidateQueries({
         queryKey: [QUERY_KEYS.GET_SAVED_POSTS],
@@ -123,6 +128,7 @@ export const useDeleteSavedPost = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: [QUERY_KEYS.GET_RECENT_POSTS],
+        refetchType:'all'
       });
       queryClient.invalidateQueries({
         queryKey: [QUERY_KEYS.GET_SAVED_POSTS],
@@ -165,6 +171,7 @@ export const useDeletePost = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: [QUERY_KEYS.GET_RECENT_POSTS],
+        refetchType:'all'
       });
     },
   });
@@ -243,9 +250,12 @@ export const useGetUserPosts = (userId?: string) => {
 };
 
 export const useGetAllUsers = () => {
+  console.log('QUERY get all users');
+  
   return useQuery({
     queryKey: [QUERY_KEYS.GET_USERS],
     queryFn: getAllUsers,
+    refetchOnMount:false
   });
 };
 
