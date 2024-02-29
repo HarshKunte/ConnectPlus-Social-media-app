@@ -130,6 +130,8 @@ export async function createPost(post: INewPost) {
           imageUrl: fileUrl || null,
           imageId: uploadedFile?.$id || null,
           location: post.location,
+          musicUrl: post.musicUrl,
+          isAnonymous: post.isAnonymous,
           tags: tags,
         }
       );
@@ -230,6 +232,8 @@ export async function getPostById(postId?: string) {
 
 // ============================== UPDATE POST
 export async function updatePost(post: IUpdatePost) {
+  console.log('api reached');
+  
   const hasFileToUpdate = post.file.length > 0;
 
   try {
@@ -294,7 +298,7 @@ export async function updatePost(post: IUpdatePost) {
 
 // ============================== DELETE POST
 export async function deletePost(postId?: string, imageId?: string) {
-  if (!postId || !imageId) return;
+  if (!postId) return;
 
   try {
     const statusCode = await databases.deleteDocument(
@@ -305,6 +309,7 @@ export async function deletePost(postId?: string, imageId?: string) {
 
     if (!statusCode) throw Error;
 
+    if(imageId)
     await deleteFile(imageId);
 
     return { status: "Ok" };

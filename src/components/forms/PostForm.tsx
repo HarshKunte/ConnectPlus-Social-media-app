@@ -34,7 +34,6 @@ type PostFormProps = {
 };
 
 const PostForm = ({ post, action, postType, suggestedCaption }: PostFormProps) => {
-  console.log(suggestedCaption);
   
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -52,6 +51,7 @@ const PostForm = ({ post, action, postType, suggestedCaption }: PostFormProps) =
     },
   });
   useEffect(()=>{
+    if(suggestedCaption)
     form.setValue('caption', suggestedCaption || "")
   },[suggestedCaption])
 
@@ -63,6 +63,8 @@ const PostForm = ({ post, action, postType, suggestedCaption }: PostFormProps) =
 
   // Handler
   const handleSubmit = async (value: z.infer<typeof PostValidation>) => {
+    console.log('clciked');
+    
     // ACTION = UPDATE
     if (post && action === "Update") {
       const updatedPost = await updatePost({
@@ -120,7 +122,7 @@ const PostForm = ({ post, action, postType, suggestedCaption }: PostFormProps) =
           )}
         />
 
-        {postType === "image" && (
+        {(postType === "image" || post?.imageUrl) && (
           <FormField
             control={form.control}
             name="file"
@@ -141,7 +143,7 @@ const PostForm = ({ post, action, postType, suggestedCaption }: PostFormProps) =
           />
         )}
 
-        {postType === "music" && (
+        {(postType === "music" || post?.musicUrl) && (
           <FormField
             control={form.control}
             name="musicUrl"

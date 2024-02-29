@@ -23,13 +23,18 @@ const PostDetails = () => {
   const { data: userPosts, isLoading: isUserPostLoading } = useGetUserPosts(
     post?.creator.$id
   );
-  const { mutate: deletePost } = useDeletePost();
+  const { mutate:deletePost , isPending:isDeleting, isError:deleteFailed } = useDeletePost();
 
   const relatedPosts = userPosts?.documents.filter((userPost:Models.Document) => userPost.$id !== id);
 
   const handleDeletePost = () => {
+    
     deletePost({ postId: id, imageId: post?.imageId });
-    navigate(-1);
+
+    if(deleteFailed) console.log('delete failed');
+    
+
+    if(!isDeleting) navigate(-1);
   };
 
   return (

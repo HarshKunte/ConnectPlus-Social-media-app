@@ -1,5 +1,6 @@
 import { Models } from "appwrite";
 import { Link } from "react-router-dom";
+import {Spotify} from 'react-spotify-embed'
 
 import { multiFormatDateString } from "@/lib/utils";
 import { useUserContext } from "@/context/AuthContext";
@@ -74,6 +75,9 @@ const PostCard = ({ post }: PostCardProps) => {
           alt="post image"
           className="post-card_img"
         />}
+
+        {post.musicUrl && <Spotify className="my-4" wide link={post.musicUrl}/>}
+        
       </Link>
 
       <PostStats post={post} userId={user.id} />

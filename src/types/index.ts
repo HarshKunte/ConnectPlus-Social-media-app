@@ -19,7 +19,7 @@ export type INavLink = {
     file: File[];
     location?: string;
     tags?: string;
-    musicUrl: string,
+    musicUrl?: string,
     isAnonymous: boolean
   };
   
@@ -30,6 +30,7 @@ export type INavLink = {
     imageUrl: URL;
     file: File[];
     location?: string;
+    musicUrl?: string,
     tags?: string;
   };
   
