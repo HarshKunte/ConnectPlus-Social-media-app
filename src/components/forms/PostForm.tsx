@@ -46,7 +46,7 @@ const PostForm = ({ post, action, postType, suggestedCaption }: PostFormProps) =
       file: [],
       location: post ? post.location : "",
       tags: post ? post.tags.join(",") : "",
-      musicUrl: post ? post.musicUrl : "",
+      musicUrl: post?.musicUrl || "",
       isAnonymous: post ? post.isAnonymous : false,
     },
   });
@@ -143,7 +143,7 @@ const PostForm = ({ post, action, postType, suggestedCaption }: PostFormProps) =
           />
         )}
 
-        {(postType === "music" || post?.musicUrl) && (
+        {/* {(postType === "music" || post?.musicUrl) && ( */}
           <FormField
             control={form.control}
             name="musicUrl"
@@ -162,7 +162,7 @@ const PostForm = ({ post, action, postType, suggestedCaption }: PostFormProps) =
               </FormItem>
             )}
           />
-        )}
+        {/* )} */}
         <FormField
           control={form.control}
           name="location"
