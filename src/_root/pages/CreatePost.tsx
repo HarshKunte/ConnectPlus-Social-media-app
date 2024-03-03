@@ -14,7 +14,7 @@ import Loader from "@/components/shared/Loader";
 import ImagePostForm from "@/components/forms/ImagePostForm";
 import MusicPostForm from "@/components/forms/MusicPostForm";
 
-const OPENAI_API_KEY = "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";
+const OPENAI_API_KEY = import.meta.env.VITE_OPENAI_API_KEY;
 
 const CreatePost = () => {
   const [postType, setPostType] = useState("image");
