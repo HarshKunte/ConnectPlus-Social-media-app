@@ -1,4 +1,3 @@
-import PostForm from "@/components/forms/PostForm";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import axios from "axios";
@@ -12,6 +11,8 @@ import {
 } from "@/components/ui/select";
 import { toast } from "@/components/ui/use-toast";
 import Loader from "@/components/shared/Loader";
+import ImagePostForm from "@/components/forms/ImagePostForm";
+import MusicPostForm from "@/components/forms/MusicPostForm";
 
 const OPENAI_API_KEY = "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";
 
@@ -100,7 +101,12 @@ const CreatePost = () => {
           ) : (
             aiCaptions.length > 0 && (
               <div className="mb-16">
-                <p className="mb-4 mt-10">Generated Captions ✨ <span className="text-sm text-light-4">Click on any one to use it as caption</span> </p>
+                <p className="mb-4 mt-10">
+                  Generated Captions ✨{" "}
+                  <span className="text-sm text-light-4">
+                    Click on any one to use it as caption
+                  </span>{" "}
+                </p>
                 <div className="flex flex-wrap gap-5">
                   {aiCaptions.map((caption, index) => (
                     <span
@@ -129,11 +135,11 @@ const CreatePost = () => {
           </div>
         </div>
 
-        <PostForm
-          postType={postType}
-          suggestedCaption={newCaption}
-          action="Create"
-        />
+        {postType === "music" ? (
+          <MusicPostForm action="Create" suggestedCaption={newCaption} />
+        ) : (
+          <ImagePostForm action="Create" suggestedCaption={newCaption} />
+        )}
       </div>
     </div>
   );

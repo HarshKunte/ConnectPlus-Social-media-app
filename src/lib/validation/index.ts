@@ -11,7 +11,14 @@ export const SigninValidation = z.object({
   email: z.string().email(),
   password: z.string().min(8, { message: "Password must be at least 8 characters." }),
 });
-export const PostValidation = z.object({
+export const ImagePostValidation = z.object({
+  caption: z.string().min(2, { message: "Minimum 2 characters." }).max(2200, { message: "Maximum 2,200 caracters" }),
+  file: z.custom<File[]>(),
+  location: z.string(),
+  tags: z.string(),
+  isAnonymous: z.boolean()
+});
+export const MusicPostValidation = z.object({
   caption: z.string().min(2, { message: "Minimum 2 characters." }).max(2200, { message: "Maximum 2,200 caracters" }),
   file: z.custom<File[]>(),
   location: z.string(),

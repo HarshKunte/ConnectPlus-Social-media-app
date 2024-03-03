@@ -13,6 +13,7 @@ import Loader from "@/components/shared/Loader";
 import { Models } from "appwrite";
 import PostStats from "@/components/shared/PostStats";
 import GridPostList from "@/components/shared/GridPostList";
+import { Spotify } from "react-spotify-embed";
 
 const PostDetails = () => {
   const navigate = useNavigate();
@@ -58,6 +59,7 @@ const PostDetails = () => {
         <Loader />
       ) : (
         <div className="post_details-card">
+          {post?.musicUrl && <Spotify link={post.musicUrl}/>}
           {post?.imageUrl && <img
             src={post?.imageUrl}
             alt="creator"

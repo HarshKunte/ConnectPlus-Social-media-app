@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-import { PostValidation } from "@/lib/validation";
+import { ImagePostValidation } from "@/lib/validation";
 import { useToast } from "@/components/ui/use-toast";
 import { useUserContext } from "@/context/AuthContext";
 import {
@@ -29,24 +29,22 @@ import { useEffect } from "react";
 type PostFormProps = {
   post?: Models.Document;
   action: "Create" | "Update";
-  postType?: string;
   suggestedCaption? :string;
 };
 
-const PostForm = ({ post, action, postType, suggestedCaption }: PostFormProps) => {
+const ImagePostForm = ({ post, action, suggestedCaption }: PostFormProps) => {
   
   const navigate = useNavigate();
   const { toast } = useToast();
   const { user } = useUserContext();
 
-  const form = useForm<z.infer<typeof PostValidation>>({
-    resolver: zodResolver(PostValidation),
+  const form = useForm<z.infer<typeof ImagePostValidation>>({
+    resolver: zodResolver(ImagePostValidation),
     defaultValues: {
       caption: post ? post?.caption : suggestedCaption? suggestedCaption:"",
       file: [],
       location: post ? post.location : "",
       tags: post ? post.tags.join(",") : "",
-      musicUrl: post?.musicUrl || "",
       isAnonymous: post ? post.isAnonymous : false,
     },
   });
@@ -62,7 +60,7 @@ const PostForm = ({ post, action, postType, suggestedCaption }: PostFormProps) =
     useUpdatePost();
 
   // Handler
-  const handleSubmit = async (value: z.infer<typeof PostValidation>) => {
+  const handleSubmit = async (value: z.infer<typeof ImagePostValidation>) => {
     console.log('clciked');
     
     // ACTION = UPDATE
@@ -122,7 +120,6 @@ const PostForm = ({ post, action, postType, suggestedCaption }: PostFormProps) =
           )}
         />
 
-        {(postType === "image" || post?.imageUrl) && (
           <FormField
             control={form.control}
             name="file"
@@ -141,28 +138,9 @@ const PostForm = ({ post, action, postType, suggestedCaption }: PostFormProps) =
               </FormItem>
             )}
           />
-        )}
+        
 
-        {/* {(postType === "music" || post?.musicUrl) && ( */}
-          <FormField
-            control={form.control}
-            name="musicUrl"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel className="shad-form_label">Song URL (Spotify URL)</FormLabel>
-                <FormControl>
-                  <Input
-                    type="text"
-                    placeholder="Paste spotify link of the music track you want to share"
-                    className="shad-input"
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage className="shad-form_message" />
-              </FormItem>
-            )}
-          />
-        {/* )} */}
+       
         <FormField
           control={form.control}
           name="location"
@@ -222,4 +200,4 @@ const PostForm = ({ post, action, postType, suggestedCaption }: PostFormProps) =
   );
 };
 
-export default PostForm;
+export default ImagePostForm;

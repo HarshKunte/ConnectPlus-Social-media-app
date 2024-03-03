@@ -96,7 +96,7 @@ export async function getCurrentUser(){
 
 // ============================== CREATE POST
 export async function createPost(post: INewPost) {
-    const hasFileToUpdate = post.file.length > 0;
+    const hasFileToUpdate = post.file && post.file.length > 0;
 
     let fileUrl, uploadedFile;
     try {
@@ -232,9 +232,8 @@ export async function getPostById(postId?: string) {
 
 // ============================== UPDATE POST
 export async function updatePost(post: IUpdatePost) {
-  console.log('api reached');
   
-  const hasFileToUpdate = post.file.length > 0;
+  const hasFileToUpdate = post.file && post.file.length > 0;
 
   try {
     let image = {

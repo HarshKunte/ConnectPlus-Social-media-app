@@ -1,8 +1,9 @@
 
 import { useParams } from "react-router-dom";
-import PostForm from "@/components/forms/PostForm";
 import { useGetPostById } from "@/lib/react-query/queriesAndMutation";
 import Loader from "@/components/shared/Loader";
+import MusicPostForm from "@/components/forms/MusicPostForm";
+import ImagePostForm from "@/components/forms/ImagePostForm";
 
 const EditPost = () => {
   const { id } = useParams();
@@ -29,7 +30,7 @@ const EditPost = () => {
           <h2 className="h3-bold md:h2-bold text-left w-full">Edit Post</h2>
         </div>
 
-        {isLoading ? <Loader /> : <PostForm action="Update" post={post} />}
+        {isLoading ? <Loader /> : (post?.musicUrl? <MusicPostForm action="Update" post={post} />: <ImagePostForm action="Update" post={post}/>)}
       </div>
     </div>
   );
