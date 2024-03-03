@@ -68,10 +68,10 @@ const form = useForm<z.infer<typeof SignupValidation>>({
   }
   return (
     <Form {...form}>
-      <div className="sm:w-420 flex-center flex-col">
-      <p className="h1-bold md:h1-bold text-center w-full text-primary-500 ">Connect+</p>
+      <div className="sm:w-420 flex-center flex-col p-5 md:p-0">
+      <p className="h1-bold md:h1-bold text-center w-full text-primary-500 mt-28">Connect+</p>
 
-        <h2 className="h3-bold md:h2-bold pt-5 sm:pt-12">
+        <h2 className="h3-bold md:h2-bold pt-5 sm:pt-12 md:pt-4">
           Create a new account
         </h2>
         <p className="text-light-3 small-medium md:base-regular mt-2">
@@ -156,6 +156,10 @@ const form = useForm<z.infer<typeof SignupValidation>>({
             </Link>
           </p>
         </form>
+        <p className="text-light-3 text-sm mt-4">
+         Wanna try out app without signing in? <br />
+         Signin using Username : <span className="text-green-200">johntester@gmail.com</span> Password : <span className="text-green-200">john12345</span>
+        </p>
       </div>
     </Form>
   )

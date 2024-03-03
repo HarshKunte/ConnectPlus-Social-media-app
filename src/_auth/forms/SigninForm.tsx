@@ -59,7 +59,7 @@ const form = useForm<z.infer<typeof SigninValidation>>({
   }
   return (
     <Form {...form}>
-      <div className="sm:w-420 flex-center flex-col">
+      <div className="sm:w-420 flex-center flex-col p-5 md:p-0">
       <h1 className="h1-bold md:h1-bold w-full text-primary-500 text-center">Connect+</h1>
 
         <h2 className="h3-bold md:h2-bold pt-5 sm:pt-12">
@@ -120,6 +120,10 @@ const form = useForm<z.infer<typeof SigninValidation>>({
             </Link>
           </p>
         </form>
+        <p className="text-light-3 text-sm mt-4">
+         Wanna try out app without signing in? <br />
+         Use Username : <span className="text-green-200">johntester@gmail.com</span> Password : <span className="text-green-200">john12345</span>
+        </p>
       </div>
     </Form>
   )

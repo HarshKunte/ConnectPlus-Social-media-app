@@ -2,7 +2,7 @@ import { Models } from "appwrite";
 import { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 
-import { checkIsLiked } from "@/lib/utils";
+import getLikedPeople, { checkIsLiked } from "@/lib/utils";
 import {
   useLikePost,
   useSavePost,
@@ -14,9 +14,10 @@ import Loader from "./Loader";
 type PostStatsProps = {
   post: Models.Document;
   userId: string;
+  showLikedPeople?:boolean;
 };
 
-const PostStats = ({ post, userId }: PostStatsProps) => {
+const PostStats = ({ post, userId, showLikedPeople=true }: PostStatsProps) => {
   const location = useLocation();
   const likesList = post.likes.map((user: Models.Document) => user.$id);
 
@@ -26,6 +27,8 @@ const PostStats = ({ post, userId }: PostStatsProps) => {
   const { mutate: likePost, isPending:isLikingPost } = useLikePost();
   const { mutate: savePost, isPending:isSavingPost } = useSavePost();
   const { mutate: deleteSavePost, isPending:isUnSavingPost } = useDeleteSavedPost();
+  const [likedPeople, setLikedPeople] = useState('')
+  
 
   const { data: currentUser } = useGetCurrentUser();
 
@@ -36,6 +39,14 @@ const PostStats = ({ post, userId }: PostStatsProps) => {
   useEffect(() => {
     setIsSaved(!!savedPostRecord);
   }, [currentUser]);
+
+  useEffect(()=>{
+    const likedUserNames = post.likes.map((item:Models.Document)=> item.username);
+    const likedPeopleString = getLikedPeople(likedUserNames);
+
+    setLikedPeople(likedPeopleString);
+},[post.likes])
+
 
   const handleLikePost = (
     e: React.MouseEvent<HTMLImageElement, MouseEvent>
@@ -81,19 +92,23 @@ const PostStats = ({ post, userId }: PostStatsProps) => {
             <Loader/>
           ):(
             <>
+            <div className="flex items-center">
+
             <img
             src={`${
               checkIsLiked(likes, userId)
-                ? "/assets/icons/liked.svg"
-                : "/assets/icons/like.svg"
+              ? "/assets/icons/liked.svg"
+              : "/assets/icons/like.svg"
             }`}
             alt="like"
             width={20}
             height={20}
             onClick={(e) => handleLikePost(e)}
             className="cursor-pointer"
-          />
-          <p className="small-medium lg:base-medium">{likes.length}</p>
+            />
+          <p className="ml-1 small-medium lg:base-medium">{likes.length} </p>
+            </div>
+          {showLikedPeople && likes.length>0 && <p className="text-sm ml-3">liked by {likedPeople}</p>}
           </>
           )
         }

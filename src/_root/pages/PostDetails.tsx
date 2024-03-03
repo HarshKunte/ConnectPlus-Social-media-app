@@ -59,7 +59,7 @@ const PostDetails = () => {
         <Loader />
       ) : (
         <div className="post_details-card">
-          {post?.musicUrl && <Spotify link={post.musicUrl}/>}
+          {post?.musicUrl && <div className="flex justify-center"><Spotify link={post.musicUrl}/></div>}
           {post?.imageUrl && <img
             src={post?.imageUrl}
             alt="creator"

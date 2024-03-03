@@ -1,6 +1,5 @@
 import { type ClassValue, clsx } from "clsx"
 import { twMerge } from "tailwind-merge"
-import OpenAI from 'openai'
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -58,4 +57,30 @@ export const checkIsLiked = (likeList: string[], userId: string) => {
 };
 
 
-export const openai = new OpenAI({apiKey:'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', dangerouslyAllowBrowser:true});
+export default function getLikedPeople(itemsParam:string[], options:{length:number}={length:1}) {
+  // Filter falsey values.
+  let items = itemsParam.filter((item) => !!item);
+
+  if (!items || items.length === 0) {
+    return '';
+  }
+
+  // No processing is needed if there's only one item.
+  if (items.length === 1) {
+    return items[0];
+  }
+
+
+  // Length is specified and valid.
+  if (options.length && options.length > 0 && options.length < items.length) {
+    const firstSection = items.slice(0, options.length).join(', ');
+    const count = items.length - options.length;
+    const secondSection = `${count} ${' other' + (count > 1 ? 's' : '')}`;
+    return [firstSection, secondSection].join(' and ');
+  }
+
+  // Case where length is not specified.
+  const firstSection = items.slice(0, items.length - 1).join(', ');
+  const secondSection = items[items.length - 1];
+  return [firstSection, secondSection].join(' and ');
+}
