@@ -19,12 +19,14 @@ import {
   FormLabel,
   FormControl,
   FormMessage,
+  FormDescription,
 } from "../ui/form";
 import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
 import { Loader } from "lucide-react";
 import FileUploader from "../shared/FileUploader";
 import { useEffect } from "react";
+import { Switch } from "../ui/switch";
 
 type PostFormProps = {
   post?: Models.Document;
@@ -100,6 +102,27 @@ const ImagePostForm = ({ post, action, suggestedCaption }: PostFormProps) => {
         onSubmit={form.handleSubmit(handleSubmit)}
         className="flex flex-col gap-9 w-full  max-w-5xl"
       >
+         <FormField
+          control={form.control}
+          name="isAnonymous"
+          render={({ field }) => (
+            <FormItem className="flex flex-row items-center justify-between rounded-lg border border-light-3 p-3 shadow-sm">
+              <div className="space-y-0.5">
+                <FormLabel>Post anonymously</FormLabel>
+                <FormDescription className="text-light-3">
+                  Your username and profile-pic will not be shown to other users
+                  viewing the post.
+                </FormDescription>
+              </div>
+              <FormControl>
+                <Switch
+                  checked={field.value}
+                  onCheckedChange={field.onChange}
+                />
+              </FormControl>
+            </FormItem>
+          )}
+        />
         <FormField
           control={form.control}
           name="caption"

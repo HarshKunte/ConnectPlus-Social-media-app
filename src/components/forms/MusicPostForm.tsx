@@ -19,20 +19,21 @@ import {
   FormLabel,
   FormControl,
   FormMessage,
+  FormDescription,
 } from "../ui/form";
 import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
 import { Loader } from "lucide-react";
 import { useEffect } from "react";
+import { Switch } from "../ui/switch";
 
 type PostFormProps = {
   post?: Models.Document;
   action: "Create" | "Update";
-  suggestedCaption? :string;
+  suggestedCaption?: string;
 };
 
 const MusicPostForm = ({ post, action, suggestedCaption }: PostFormProps) => {
-  
   const navigate = useNavigate();
   const { toast } = useToast();
   const { user } = useUserContext();
@@ -40,17 +41,16 @@ const MusicPostForm = ({ post, action, suggestedCaption }: PostFormProps) => {
   const form = useForm<z.infer<typeof MusicPostValidation>>({
     resolver: zodResolver(MusicPostValidation),
     defaultValues: {
-      caption: post ? post?.caption : suggestedCaption? suggestedCaption:"",
+      caption: post ? post?.caption : suggestedCaption ? suggestedCaption : "",
       location: post ? post.location : "",
       tags: post ? post.tags.join(",") : "",
       musicUrl: post?.musicUrl || "",
       isAnonymous: post ? post.isAnonymous : false,
     },
   });
-  useEffect(()=>{
-    if(suggestedCaption)
-    form.setValue('caption', suggestedCaption || "")
-  },[suggestedCaption])
+  useEffect(() => {
+    if (suggestedCaption) form.setValue("caption", suggestedCaption || "");
+  }, [suggestedCaption]);
 
   // Query
   const { mutateAsync: createPost, isPending: isLoadingCreate } =
@@ -60,9 +60,8 @@ const MusicPostForm = ({ post, action, suggestedCaption }: PostFormProps) => {
 
   // Handler
   const handleSubmit = async (value: z.infer<typeof MusicPostValidation>) => {
-    console.log('clicked');
-    
-    
+    console.log("clicked");
+
     // ACTION = UPDATE
     if (post && action === "Update") {
       const updatedPost = await updatePost({
@@ -102,6 +101,27 @@ const MusicPostForm = ({ post, action, suggestedCaption }: PostFormProps) => {
       >
         <FormField
           control={form.control}
+          name="isAnonymous"
+          render={({ field }) => (
+            <FormItem className="flex flex-row items-center justify-between rounded-lg border border-light-3 p-3 shadow-sm">
+              <div className="space-y-0.5">
+                <FormLabel>Post anonymously</FormLabel>
+                <FormDescription className="text-light-3">
+                  Your username and profile-pic will not be shown to other users
+                  viewing the post.
+                </FormDescription>
+              </div>
+              <FormControl>
+                <Switch
+                  checked={field.value}
+                  onCheckedChange={field.onChange}
+                />
+              </FormControl>
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
           name="caption"
           render={({ field }) => (
             <FormItem>
@@ -110,7 +130,7 @@ const MusicPostForm = ({ post, action, suggestedCaption }: PostFormProps) => {
               </FormLabel>
               <FormControl>
                 <Textarea
-                placeholder="Write what you want to share"
+                  placeholder="Write what you want to share"
                   className="shad-textarea custom-scrollbar"
                   {...field}
                 />
@@ -120,24 +140,26 @@ const MusicPostForm = ({ post, action, suggestedCaption }: PostFormProps) => {
           )}
         />
 
-          <FormField
-            control={form.control}
-            name="musicUrl"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel className="shad-form_label">Song URL (Spotify URL)</FormLabel>
-                <FormControl>
-                  <Input
-                    type="text"
-                    placeholder="Paste spotify link of the music track you want to share"
-                    className="shad-input"
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage className="shad-form_message" />
-              </FormItem>
-            )}
-          />
+        <FormField
+          control={form.control}
+          name="musicUrl"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="shad-form_label">
+                Song URL (Spotify URL)
+              </FormLabel>
+              <FormControl>
+                <Input
+                  type="text"
+                  placeholder="Paste spotify link of the music track you want to share"
+                  className="shad-input"
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage className="shad-form_message" />
+            </FormItem>
+          )}
+        />
 
         <FormField
           control={form.control}
