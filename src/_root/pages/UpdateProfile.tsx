@@ -19,7 +19,7 @@ import { useGetUserById, useUpdateUser } from "@/lib/react-query/queriesAndMutat
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { ImagePlus, Loader } from "lucide-react";
+import { Loader } from "lucide-react";
 import ProfileUploader from "@/components/shared/ProfileUploader";
 
 const UpdateProfile = () => {
