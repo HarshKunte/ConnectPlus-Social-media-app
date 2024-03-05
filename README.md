@@ -2,11 +2,6 @@
 
 Social media app where you can share your thoughts, images and/or music recommendations with others.
 
- ![React](https://img.shields.io/badge/react-%2320232a.svg?style=for-the-badge&logo=react&logoColor=%2361DAFB)
-  ![TailwindCSS](https://img.shields.io/badge/tailwindcss-%2338B2AC.svg?style=for-the-badge&logo=tailwind-css&logoColor=white)
-  [![TypeScript](https://badges.frapsoft.com/typescript/code/typescript.png?v=101)](https://github.com/ellerbrock/typescript-badges/)
-
-
 
 ## Features 📃
 This is not just a regular social media app, it has extra features where a user can
